@@ -23,6 +23,6 @@ export default class OrdersController {
 
     const order = await createOrderService.execute({ customer_id, products });
 
-    return response.json({ order });
+    return response.json(order);
   }
 }

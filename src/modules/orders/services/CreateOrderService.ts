@@ -39,12 +39,16 @@ class CreateOrderService {
 
     const productsDb = await this.productsRepository.findAllById(products);
 
-    if (!productsDb) {
+    if (productsDb.length == 0) {
       throw new AppError('No products found.');
     }
 
     const produtsToPersist = productsDb.map(product => {
       const pd = products.find(pd => pd.id == product.id);
+
+      if (pd && pd.quantity > product.quantity) {
+        throw new AppError('Quantity higher.');
+      }
 
       return {
         product_id: product.id,

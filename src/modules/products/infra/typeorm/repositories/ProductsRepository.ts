@@ -21,7 +21,11 @@ class ProductsRepository implements IProductsRepository {
     price,
     quantity,
   }: ICreateProductDTO): Promise<Product> {
-    const product = await this.ormRepository.create({ name, price, quantity });
+    const product = this.ormRepository.create({ name, price, quantity });
+
+    await this.ormRepository.save(product);
+
+    console.log(product);
 
     return product;
   }
@@ -53,9 +57,15 @@ class ProductsRepository implements IProductsRepository {
 
     const productsDb = await this.findAllById(ids);
 
-    productsDb.forEach(async productDb => {
-      await this.ormRepository.save(productDb);
-    });
+    for (var i in productsDb) {
+      var prod = products.find(product => product.id == productsDb[i].id);
+
+      if (prod) {
+        productsDb[i].quantity = productsDb[i].quantity - prod.quantity;
+      }
+
+      await this.ormRepository.save(productsDb[i]);
+    }
 
     return productsDb;
   }
